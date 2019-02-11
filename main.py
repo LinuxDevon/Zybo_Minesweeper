@@ -2,6 +2,7 @@
 
 # -- INLCUDES -- #
 import tkinter as tk
+import sys, getopt
 from windows import *
 
 # -- DEFINES -- #
@@ -16,23 +17,32 @@ def startApplication():
 
    window = Window(root)
    window.pack(fill=tk.BOTH)
-   # print("Starting the mine window")
-   # mineWindow = MineWindow(root)
-   # mineWindow.pack(side=tk.BOTTOM)
-
-   # print("Starting the top window")
-   # topWindow = TopWindow(root)
-   # topWindow.pack(fill=tk.X, side=tk.TOP)
 
    print("Running main loop... the game loop")
    root.mainloop()
 
 # start code for the game
+def main(argv):
+   startApplication()
+   # try:
+   #    opts, args = getopt.getopt(argv,"hr:c",["ifile=","columns="])
+   # except getopt.GetoptError:
+   #    print 'main.py -i <inputfile> -o <outputfile>'
+   #    sys.exit(2)
+   # for opt, arg in opts:
+   #    if opt == '-h':
+   #       print 'test.py -i <inputfile> -o <outputfile>'
+   #       sys.exit()
+   #    elif opt in ("-i", "--ifile"):
+   #       inputfile = arg
+   #    elif opt in ("-o", "--ofile"):
+   #       outputfile = arg
+
 if __name__ == "__main__":
    print("==========================================")
    print("Starting Application")
 
-   startApplication()
+   main(sys.argv[1:]) # send the command line arguments
    
    print("Application closed")
    print("=========================================")
