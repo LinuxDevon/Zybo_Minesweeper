@@ -43,63 +43,69 @@ class Tile(tk.Button):
       self.bind('<Button-3>', self.rightButtonClick)
 
    def leftButtonClick(self, event):
-   	  if(self.state == State.PRESSED):
-   	     None
-   	  elif(self.state == State.START):
-   	     self.state = State.PRESSED
-   	     self.config(background=PRESSED_COLOR, state=tk.DISABLED, text=str(self.count))
-   	     if(self.count == 0):
-   	     	self.gameFrame.UpdateTiles(self)
-   	  elif(self.state == State.BOMB):
-   	     if(self.bomb):
-   	     	print("Game Over......     :(")
-   	     	self.gameFrame.GameOver()
-   	  elif(self.state == State.FLAG):
-   	     None
-   	  elif(self.state == State.QUESTIONABLE):
-   	     None
+      if(self.state == State.PRESSED):
+         None
+      elif(self.state == State.START):
+         self.state = State.PRESSED
+         self.config(background=PRESSED_COLOR, state=tk.DISABLED, text=str(self.count))
+         if(self.count == 0):
+            self.gameFrame.UpdateTiles(self)
+         else:
+            self.gameFrame.checkForWin() 
+      elif(self.state == State.BOMB):
+         if(self.bomb):
+            print("Game Over......     :(")
+            self.gameFrame.GameOver()
+      elif(self.state == State.FLAG):
+         None
+      elif(self.state == State.QUESTIONABLE):
+         None
 
    def rightButtonClick(self, event):
-   	  if(self.state == State.PRESSED):
-   	  	None
-   	  elif(self.state == State.START):
-   	  	self.state = State.FLAG
-   	  	self.config(background=FLAG_COLOR, state=tk.DISABLED)
-   	  elif(self.state == State.BOMB):
-   	  	self.state = State.FLAG
-   	  	self.config(background=FLAG_COLOR, state=tk.DISABLED)
-   	  elif(self.state == State.FLAG):
-   	  	self.state = State.QUESTIONABLE
-   	  	self.config(background=QUESTION_COLOR, state=tk.DISABLED)
-   	  elif(self.state == State.QUESTIONABLE):
-   	  	if(self.bomb):
-   	  	   self.state = State.BOMB
-   	  	else:
-   	  	   self.state = State.START
-   	  	self.config(background=STARTING_COLOR, state=tk.NORMAL)
+         if(self.state == State.PRESSED):
+            None
+         elif(self.state == State.START):
+            self.state = State.FLAG
+            self.config(background=FLAG_COLOR, state=tk.DISABLED)
+            self.gameFrame.decrementFlag()
+         elif(self.state == State.BOMB):
+            self.state = State.FLAG
+            self.config(background=FLAG_COLOR, state=tk.DISABLED)
+            self.gameFrame.decrementFlag()
+         elif(self.state == State.FLAG):
+            self.state = State.QUESTIONABLE
+            self.config(background=QUESTION_COLOR, state=tk.DISABLED)
+            self.gameFrame.incrementFlag()
+         elif(self.state == State.QUESTIONABLE):
+            if(self.bomb):
+   	  	      self.state = State.BOMB
+            else:
+   	  	      self.state = State.START
+            self.config(background=STARTING_COLOR, state=tk.NORMAL)
 
    def updateState(self):
          if(self.state == State.PRESSED):
-            None
+            self.toUpdate = False
+            # None
          elif(self.state == State.START):
             if(not self.bomb):
                self.state = State.PRESSED
                self.config(background=PRESSED_COLOR, state=tk.DISABLED, text=str(self.count))
          elif(self.state == State.BOMB):
-            None
+            self.toUpdate = False
          elif(self.state == State.FLAG):
-            None
+            self.toUpdate = False
          elif(self.state == State.QUESTIONABLE):
-            None
-         self.toUpdate = False
+            self.toUpdate = False
 
    def needUpdate(self):
-      self.toUpdate = True
+      if(not self.bomb):
+         self.toUpdate = True
 
    # makes the state of the tile a bomb
    def setBombTile(self):
       self.state = State.BOMB
-      # self.config(bg=BOMB_COLOR)
+      self.config(bg=BOMB_COLOR)
       self.bomb = True
 
    # used to increase the count when looping over the bombs
@@ -114,10 +120,7 @@ class Tile(tk.Button):
 
    # returns true if the tile is a bomb false otherwise
    def isBomb(self):
-   	  if(self.state == State.BOMB):
-   	  	return True
-   	  else:
-   	  	return False
+   	  return self.bomb
 
    # returns the state of the button
    def isPressed(self):
@@ -127,7 +130,8 @@ class Tile(tk.Button):
          return False
 
    def reset(self):
-   	  self.state = State.START
-   	  self.count = 0
-   	  self.bomb = False
-   	  self.config(state=tk.NORMAL, bg=STARTING_COLOR, width=self.width, height=self.height, text="")
+      self.state = State.START
+      self.count = 0
+      self.bomb = False
+      self.toUpdate = False
+      self.config(state=tk.NORMAL, bg=STARTING_COLOR, width=self.width, height=self.height, text="")

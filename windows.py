@@ -96,82 +96,108 @@ class Window(tk.Frame):
    def UpdateTiles(self, tile):
       numOfTilesToUpdate = 0
       toUpdate = True
+
+      # if it is a number don't check surrounding tiles
       if(tile.count > 0):
          tile.updateState()
       else:
-         tile.updateState() # show the count
-         self.checkTiles(tile)
+         self.checkTiles(tile)  # start the algorithm by checking the tile clicked
 
-         # while(toUpdate):
-         #    self.checkTiles(tile)
+         # update all the tiles based on the one you clicked
+         while(toUpdate):
+            # check if tiles still need updated
+            for tileToCheck in self.tileArray:
+               if(tileToCheck.toUpdate):
+                  self.checkTiles(tileToCheck)  # update the tile
+                  numOfTilesToUpdate += 1
 
-         #    # check if tiles still need updated
-         #    for tile in self.tileArray:
-         #       if(tile.toUpdate):
-         #          numOfTilesToUpdate += 1
+            if(numOfTilesToUpdate == 0): # no more tiles break
+               toUpdate = False
 
-         #    print(numOfTilesToUpdate)
-         #    if(numOfTilesToUpdate == 0): # no more tiles break
-         #       toUpdate = False
+            numOfTilesToUpdate = 0
 
-         #    numOfTilesToUpdate = 0
+      self.checkForWin()
 
+   def incrementFlag(self):
+      self.flagCount = str(int(self.flagCount) + 1).zfill(3)
+      self.flags.set(self.flagCount)
+
+   def decrementFlag(self):
+      self.flagCount = str(int(self.flagCount) - 1).zfill(3)
+      self.flags.set(self.flagCount)
+
+   def checkForWin(self):
+      numOfTilesNotPressed = 0
+
+      # check for a win!
+      for tileToCheck in self.tileArray:
+         if(not tileToCheck.isPressed() and not tileToCheck.isBomb()):
+            numOfTilesNotPressed += 1
+
+      print(numOfTilesNotPressed)
+      if(numOfTilesNotPressed == 0):
+         self.gameOver = True
+         print("GAME WON!!!!!!!!!!")
+         print("Congradulations!")
 
    def checkTiles(self, tile):
       row = tile.row
       col = tile.col
+
+      tile.updateState()
+
       if(row-1 >= 0):   # below
-         if(self.tiles[row-1][col].count == 0 and not self.tiles[row-1][col].isPressed):
+         if(self.tiles[row-1][col].count == 0 and not self.tiles[row-1][col].isPressed()):
             self.tiles[row-1][col].needUpdate()
-         else:
+         elif(self.tiles[row-1][col].count > 0):
             self.tiles[row-1][col].updateState()
 
       if(row-1 >= 0 and col-1 >= 0): # bottom left
-         if(self.tiles[row-1][col-1].count == 0 and not self.tiles[row-1][col].isPressed):
+         if(self.tiles[row-1][col-1].count == 0 and not self.tiles[row-1][col-1].isPressed()):
             self.tiles[row-1][col-1].needUpdate()
-         else:
+         elif(self.tiles[row-1][col-1].count > 0):
             self.tiles[row-1][col-1].updateState()
 
       if(row-1 >= 0 and col+1 < self.col): # bottom right
-         if(self.tiles[row-1][col+1].count == 0 and not self.tiles[row-1][col].isPressed):
+         if(self.tiles[row-1][col+1].count == 0 and not self.tiles[row-1][col+1].isPressed()):
             self.tiles[row-1][col+1].needUpdate()
-         else:
+         elif(self.tiles[row-1][col+1].count > 0):
             self.tiles[row-1][col+1].updateState()
 
       if(row+1 < self.row): # above
-         if(self.tiles[row+1][col].count == 0 and not self.tiles[row-1][col].isPressed):
+         if(self.tiles[row+1][col].count == 0 and not self.tiles[row+1][col].isPressed()):
             self.tiles[row+1][col].needUpdate()
-         else:
+         elif(self.tiles[row+1][col].count > 0):
             self.tiles[row+1][col].updateState()
 
       if(row+1 < self.row and col-1 >= 0): # top left
-         if(self.tiles[row+1][col-1].count == 0 and not self.tiles[row-1][col].isPressed):
+         if(self.tiles[row+1][col-1].count == 0 and not self.tiles[row+1][col-1].isPressed()):
             self.tiles[row+1][col-1].needUpdate()
-         else:
+         elif(self.tiles[row+1][col-1].count > 0):
             self.tiles[row+1][col-1].updateState()
 
       if(row+1 < self.row and col+1 < self.col): # bottom right
-         if(self.tiles[row+1][col+1].count == 0 and not self.tiles[row-1][col].isPressed):
+         if(self.tiles[row+1][col+1].count == 0 and not self.tiles[row+1][col+1].isPressed()):
             self.tiles[row+1][col+1].needUpdate()
-         else:
+         elif(self.tiles[row+1][col+1].count > 0):
             self.tiles[row+1][col+1].updateState()
 
       if(col+1 < self.col):   # to the right
-         if(self.tiles[row][col+1].count == 0 and not self.tiles[row-1][col].isPressed):
+         if(self.tiles[row][col+1].count== 0 and not self.tiles[row][col+1].isPressed()):
             self.tiles[row][col+1].needUpdate()
-         else:
+         elif(self.tiles[row][col+1].count > 0):
             self.tiles[row][col+1].updateState()
 
       if(col-1 >= 0):   # to the left
-         if(self.tiles[row][col-1].count == 0 and not self.tiles[row-1][col].isPressed):
+         if(self.tiles[row][col-1].count == 0 and not self.tiles[row][col-1].isPressed()):
             self.tiles[row][col-1].needUpdate()
-         else:
+         elif(self.tiles[row][col-1].count > 0):
             self.tiles[row][col-1].updateState()
 
+         
    # place holder for reset function to the gameboard
    def Reset(self):
       print("Game reset...")
-      self.gameOver = True
       # sleep(1.5)
 
       # reset the game flag count and timer
@@ -188,11 +214,14 @@ class Window(tk.Frame):
       # re randomize the bombs
       self.RandomizeBombs()
 
-      # game is not over anymore
-      self.gameOver = False
+      if(self.gameOver == True):
+         # restart the timer
+         self.gameOver = False
+         self.updateTime()
+      else:
+         # game is not over anymore
+         self.gameOver = False
 
-      # restart the timer
-      self.updateTime()
 
    def RandomizeBombs(self):
       # pick the bombs at random
