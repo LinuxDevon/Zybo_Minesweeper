@@ -32,6 +32,8 @@ class Tile(tk.Button):
       self.count = 0
       self.bomb = False
 
+      self.bombImage = tk.PhotoImage("Tiles/Bomb.gif")
+
       self.toUpdate = False
 
       # initialize the button
@@ -105,7 +107,8 @@ class Tile(tk.Button):
    # makes the state of the tile a bomb
    def setBombTile(self):
       self.state = State.BOMB
-      self.config(bg=BOMB_COLOR)
+      # self.config(bg=BOMB_COLOR)
+      self.config(image=self.bombImage)
       self.bomb = True
 
    # used to increase the count when looping over the bombs
