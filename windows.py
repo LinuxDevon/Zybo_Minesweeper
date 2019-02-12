@@ -58,7 +58,7 @@ class Window(tk.Frame):
       rowNum = 0;
 
       for colNum in range(self.row*self.col):
-         tile = Tile(self.MineFrame, self)
+         tile = Tile(self.MineFrame, self, rowNum, colNum%self.col)
          self.tiles[rowNum][colNum%self.col] = tile
          self.tileArray[colNum] = tile
          tile.grid(row=rowNum, column=colNum%self.col)
@@ -94,35 +94,79 @@ class Window(tk.Frame):
          tile.showBomb()
 
    def UpdateTiles(self, tile):
-      print(self.tileArray.index(tile))
+      numOfTilesToUpdate = 0
+      toUpdate = True
+      if(tile.count > 0):
+         tile.updateState()
+      else:
+         tile.updateState() # show the count
+         self.checkTiles(tile)
 
-      # loop across double array to find tiles that need pressed
-      # for row in range(self.row):
-      #    for col in range(self.col):
-      #       # bounds check each 8 surrounding tiles
-      #       if(row-1 >= 0):   # below
-      #          self.tiles[row-1][col].updateState()
+         # while(toUpdate):
+         #    self.checkTiles(tile)
 
-      #       if(row-1 >= 0 and col-1 >= 0): # bottom left
-      #          self.tiles[row-1][col-1].updateState()
+         #    # check if tiles still need updated
+         #    for tile in self.tileArray:
+         #       if(tile.toUpdate):
+         #          numOfTilesToUpdate += 1
 
-      #       if(row-1 >= 0 and col+1 < self.col): # bottom right
-      #          self.tiles[row-1][col+1].updateState()
+         #    print(numOfTilesToUpdate)
+         #    if(numOfTilesToUpdate == 0): # no more tiles break
+         #       toUpdate = False
 
-      #       if(row+1 < self.row): # above
-      #          self.tiles[row+1][col].updateState()
+         #    numOfTilesToUpdate = 0
 
-      #       if(row+1 < self.row and col-1 >= 0): # top left
-      #          self.tiles[row+1][col-1].updateState()
 
-      #       if(row+1 < self.row and col+1 < self.col): # bottom right
-      #          self.tiles[row+1][col+1].updateState()
+   def checkTiles(self, tile):
+      row = tile.row
+      col = tile.col
+      if(row-1 >= 0):   # below
+         if(self.tiles[row-1][col].count == 0 and not self.tiles[row-1][col].isPressed):
+            self.tiles[row-1][col].needUpdate()
+         else:
+            self.tiles[row-1][col].updateState()
 
-      #       if(col+1 < self.col):   # to the right
-      #          self.tiles[row][col+1].updateState()
+      if(row-1 >= 0 and col-1 >= 0): # bottom left
+         if(self.tiles[row-1][col-1].count == 0 and not self.tiles[row-1][col].isPressed):
+            self.tiles[row-1][col-1].needUpdate()
+         else:
+            self.tiles[row-1][col-1].updateState()
 
-      #       if(col-1 >= 0):   # to the left
-      #          self.tiles[row][col-1].updateState()
+      if(row-1 >= 0 and col+1 < self.col): # bottom right
+         if(self.tiles[row-1][col+1].count == 0 and not self.tiles[row-1][col].isPressed):
+            self.tiles[row-1][col+1].needUpdate()
+         else:
+            self.tiles[row-1][col+1].updateState()
+
+      if(row+1 < self.row): # above
+         if(self.tiles[row+1][col].count == 0 and not self.tiles[row-1][col].isPressed):
+            self.tiles[row+1][col].needUpdate()
+         else:
+            self.tiles[row+1][col].updateState()
+
+      if(row+1 < self.row and col-1 >= 0): # top left
+         if(self.tiles[row+1][col-1].count == 0 and not self.tiles[row-1][col].isPressed):
+            self.tiles[row+1][col-1].needUpdate()
+         else:
+            self.tiles[row+1][col-1].updateState()
+
+      if(row+1 < self.row and col+1 < self.col): # bottom right
+         if(self.tiles[row+1][col+1].count == 0 and not self.tiles[row-1][col].isPressed):
+            self.tiles[row+1][col+1].needUpdate()
+         else:
+            self.tiles[row+1][col+1].updateState()
+
+      if(col+1 < self.col):   # to the right
+         if(self.tiles[row][col+1].count == 0 and not self.tiles[row-1][col].isPressed):
+            self.tiles[row][col+1].needUpdate()
+         else:
+            self.tiles[row][col+1].updateState()
+
+      if(col-1 >= 0):   # to the left
+         if(self.tiles[row][col-1].count == 0 and not self.tiles[row-1][col].isPressed):
+            self.tiles[row][col-1].needUpdate()
+         else:
+            self.tiles[row][col-1].updateState()
 
    # place holder for reset function to the gameboard
    def Reset(self):

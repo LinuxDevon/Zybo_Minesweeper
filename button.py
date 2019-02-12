@@ -18,16 +18,21 @@ class State(Enum):
 	QUESTIONABLE = 4
 
 class Tile(tk.Button):
-   def __init__(self, parent, gameFrame):
+   def __init__(self, parent, gameFrame, row, col):
       # buttons specific variables
       self.gameFrame = gameFrame
       self.root = parent
       self.width = 1
       self.height = 1
 
+      self.row = row
+      self.col = col
+
       self.state = State.START
       self.count = 0
       self.bomb = False
+
+      self.toUpdate = False
 
       # initialize the button
       # tk.Button.__init__(self, parent, width=self.width, height=self.height, command=self.leftButtonClick, bg=STARTING_COLOR, textvariable=self.count, font=('times', '10', 'bold'))
@@ -74,21 +79,22 @@ class Tile(tk.Button):
    	  	self.config(background=STARTING_COLOR, state=tk.NORMAL)
 
    def updateState(self):
-   	  if(self.state == State.PRESSED):
-   	     None
-   	  elif(self.state == State.START):
-   	  	 if(not self.bomb):
-	   	    self.state = State.PRESSED
-	   	    self.config(background=PRESSED_COLOR, state=tk.DISABLED, text=str(self.count))
-   	  elif(self.state == State.BOMB):
-   	  	 None
-   	     # if(self.bomb):
-   	     # 	print("Game Over......     :(")
-   	     # 	self.gameFrame.GameOver()
-   	  elif(self.state == State.FLAG):
-   	     None
-   	  elif(self.state == State.QUESTIONABLE):
-   	     None
+         if(self.state == State.PRESSED):
+            None
+         elif(self.state == State.START):
+            if(not self.bomb):
+               self.state = State.PRESSED
+               self.config(background=PRESSED_COLOR, state=tk.DISABLED, text=str(self.count))
+         elif(self.state == State.BOMB):
+            None
+         elif(self.state == State.FLAG):
+            None
+         elif(self.state == State.QUESTIONABLE):
+            None
+         self.toUpdate = False
+
+   def needUpdate(self):
+      self.toUpdate = True
 
    # makes the state of the tile a bomb
    def setBombTile(self):
@@ -114,8 +120,11 @@ class Tile(tk.Button):
    	  	return False
 
    # returns the state of the button
-   def getState(self):
-   	  return self.state
+   def isPressed(self):
+      if(self.state == State.PRESSED):
+         return True
+      else:
+         return False
 
    def reset(self):
    	  self.state = State.START

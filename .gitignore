@@ -1,1 +1,6 @@
+# Sublime Files
+GPE_Software.sublime-project
+GPE_Software.sublime-workspace
+
+# python cache files generated at run time
 __pycache__/*
