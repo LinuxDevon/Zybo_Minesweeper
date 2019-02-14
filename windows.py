@@ -12,7 +12,7 @@ RESET_WIDTH = 25
 RESET_HEIGHT = 25
 
 class Window(tk.Frame):
-   def __init__(self, parent , numOfRows, numOfCols, numOfBombs):
+   def __init__(self, parent , numOfRows, numOfCols, numOfBombs, mode):
       tk.Frame.__init__(self,parent) # create the frame to attach to the root
       self.root = parent
 
@@ -21,6 +21,7 @@ class Window(tk.Frame):
       self.row = numOfRows
       self.col = numOfCols
       self.startingBombCount = numOfBombs
+      self.mode = mode
 
       # images
       self.deadSmiley = tk.PhotoImage(file="Tiles/deadsmiley.png")
@@ -64,7 +65,7 @@ class Window(tk.Frame):
       rowNum = 0;
 
       for colNum in range(self.row*self.col):
-         tile = Tile(self.MineFrame, self, rowNum, colNum%self.col)
+         tile = Tile(self.MineFrame, self, rowNum, colNum%self.col, self.mode)
          self.tiles[rowNum][colNum%self.col] = tile
          self.tileArray[colNum] = tile
          tile.grid(row=rowNum, column=colNum%self.col)
@@ -83,7 +84,8 @@ class Window(tk.Frame):
    def updateTime(self):
       # convert time to an int to add
       time = int(self.timeCount)
-      time = time + 1
+      if(time < 999):
+         time = time + 1
       
       # convert back to a string and add leading zeros
       self.timeCount = str(time).zfill(3) # fill 3 spaces with zeros
@@ -207,7 +209,7 @@ class Window(tk.Frame):
    def Reset(self):
       print("Game reset...")
 
-      self.ResetButton.config(image=self.smiley)
+      self.ResetButton.config(image=self.smiley, state=tk.DISABLED)
 
       # reset the game flag count and timer
       self.timeCount = RESET_COUNT
@@ -230,6 +232,8 @@ class Window(tk.Frame):
       else:
          # game is not over anymore
          self.gameOver = False
+
+      self.ResetButton.config(state=tk.NORMAL)
 
 
    def RandomizeBombs(self):

@@ -18,12 +18,13 @@ class State(Enum):
 	QUESTIONABLE = 4
 
 class Tile(tk.Button):
-   def __init__(self, parent, gameFrame, row, col):
+   def __init__(self, parent, gameFrame, row, col, mode):
       # buttons specific variables
       self.gameFrame = gameFrame
       self.root = parent
       self.width = 15
       self.height = 15
+      self.isCheatMode = mode
 
       self.row = row
       self.col = col
@@ -133,6 +134,8 @@ class Tile(tk.Button):
    def setBombTile(self):
       self.state = State.BOMB
       self.bomb = True
+      if(self.isCheatMode):
+         self.config(image=self.bombTile)
 
    # used to increase the count when looping over the bombs
    def increaseTileCount(self):
