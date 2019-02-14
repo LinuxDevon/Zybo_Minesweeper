@@ -11,6 +11,14 @@ RESET_COUNT = "000"
 RESET_WIDTH = 25
 RESET_HEIGHT = 25
 
+# This creates the window that holds the time, Reset button, flag count, and grid of mines
+# The Window itself is a frame.
+# INPUTS:
+#     parent : the root window
+#     numOfRows : the number of rows of tiles
+#     numOfCols : the number of cols of tiles
+#     numOfBombs: the total bombs to place under the tiles
+#     mode      : the mode value to activate cheater mode (true/false)
 class Window(tk.Frame):
    def __init__(self, parent , numOfRows, numOfCols, numOfBombs, mode):
       tk.Frame.__init__(self,parent) # create the frame to attach to the root
@@ -64,6 +72,9 @@ class Window(tk.Frame):
       # make the buttons
       rowNum = 0;
 
+      # create all the tiles and insert them into the two arrays.
+      # the one is 2d array for the ripple algorithm to look like the grid
+      # and the 1d is forsearching easier
       for colNum in range(self.row*self.col):
          tile = Tile(self.MineFrame, self, rowNum, colNum%self.col, self.mode)
          self.tiles[rowNum][colNum%self.col] = tile
@@ -95,14 +106,18 @@ class Window(tk.Frame):
       if(not self.gameOver):
          self.after(1000, self.updateTime)
 
+   # Called when a bomb is clicked to set as game over
    def GameOver(self):
       self.gameOver = True
 
       self.ResetButton.config(image=self.deadSmiley)
 
+      # show the bombs at the end
       for tile in self.tileArray:
          tile.showBomb()
 
+   # called when a tile is pressed. It is the algorithm to 
+   # open up the appropriate tiles based on the click
    def UpdateTiles(self, tile):
       numOfTilesToUpdate = 0
       toUpdate = True
@@ -117,7 +132,10 @@ class Window(tk.Frame):
          while(toUpdate):
             # check if tiles still need updated
             for tileToCheck in self.tileArray:
-               if(tileToCheck.toUpdate):
+               # if there was a tile that was a zero next to a pressed one it was set as
+               # needs updated in the checkTiles() function. This looping creates the 
+               # ripple effect when clicking on a zero tile and exposing the appropriate tiles
+               if(tileToCheck.toUpdate):  # check if the tile needs updated
                   self.checkTiles(tileToCheck)  # update the tile
                   numOfTilesToUpdate += 1
 
@@ -128,22 +146,28 @@ class Window(tk.Frame):
 
       self.checkForWin()
 
+   # increases the flag count by one
    def incrementFlag(self):
       self.flagCount = str(int(self.flagCount) + 1).zfill(3)
       self.flags.set(self.flagCount)
 
+   # decreases the flag count by one
    def decrementFlag(self):
       self.flagCount = str(int(self.flagCount) - 1).zfill(3)
       self.flags.set(self.flagCount)
 
+   # looks to see if there are only bomb tiles left and tells the game is over
+   # if there is a win
    def checkForWin(self):
       numOfTilesNotPressed = 0
 
       # check for a win!
       for tileToCheck in self.tileArray:
+         # if there is no pressed tile and all of them are bombs is a win
          if(not tileToCheck.isPressed() and not tileToCheck.isBomb()):
             numOfTilesNotPressed += 1
 
+      # no tiles that are pressed meaning the left over are bombs
       if(numOfTilesNotPressed == 0):
          self.gameOver = True
          self.ResetButton.config(image=self.sunglassesSmiley)
@@ -151,11 +175,14 @@ class Window(tk.Frame):
          print("Congratulations!")
 
    def checkTiles(self, tile):
+      # the row and col of the tile that needs checked
       row = tile.row
       col = tile.col
 
-      tile.updateState()
+      tile.updateState()   # update the surrounding 8 tiles 
 
+      # bounds check the rows and columns. If there is a zero mark that it still needs updated.
+      # if there is just number then it doesn't need check so just show the tile
       if(row-1 >= 0):   # below
          if(self.tiles[row-1][col].count == 0 and not self.tiles[row-1][col].isPressed()):
             self.tiles[row-1][col].needUpdate()
@@ -203,12 +230,12 @@ class Window(tk.Frame):
             self.tiles[row][col-1].needUpdate()
          elif(self.tiles[row][col-1].count > 0):
             self.tiles[row][col-1].updateState()
-
-         
-   # place holder for reset function to the gameboard
+     
+   # Reset the gameboard
    def Reset(self):
       print("Game reset...")
 
+      # reset the reset button and disable until it is done resetting
       self.ResetButton.config(image=self.smiley, state=tk.DISABLED)
 
       # reset the game flag count and timer
@@ -233,14 +260,15 @@ class Window(tk.Frame):
          # game is not over anymore
          self.gameOver = False
 
-      self.ResetButton.config(state=tk.NORMAL)
+      self.ResetButton.config(state=tk.NORMAL) # enable the button to be pressed now that it is reset
 
-
+   # This loops through and add bombs
+   # Then it increases the tile count to the appropriate count
    def RandomizeBombs(self):
       # pick the bombs at random
       bombs = sample(self.tileArray, self.startingBombCount)
 
-      # set the tiles as bombs
+      # set the tiles as bombs that are bombs
       for tile in bombs:
          tile.setBombTile()
 

@@ -14,6 +14,11 @@ NO_CHEAT = False
 
 # function is used to create the main root frame
 # everything is attached to this window.
+# INPUTS:
+#     numOfRows : the number of rows of tiles
+#     numOfCols : the number of cols of tiles
+#     numOfBombs: the total bombs to place under the tiles
+#     mode      : the mode value to activate cheater mode (true/false)
 def startApplication(totalRows, totalCols, totalBombs, mode):
    root = tk.Tk()
    root.title(TITLE)
@@ -27,18 +32,21 @@ def startApplication(totalRows, totalCols, totalBombs, mode):
 
 # start code for the game
 def main(argv):
+   # start the settings with the defaults
    rows = ROW
    cols = COL
    bombs = TOTAL_BOMBS
    mode = NO_CHEAT
+
+   # read in the arguments
    try:
       opts, args = getopt.getopt(argv,"hr:c:b:m",["rows=","columns=","bombs="])
-   except getopt.GetoptError:
+   except getopt.GetoptError: # wrong formatting
       print("INPUT ERROR...")
       print('./main.py -h for help...')
       sys.exit(2)
    for opt, arg in opts:
-      if opt == '-h':
+      if opt == '-h':   # help option
          print("The options are:")
          print('./main.py -r <number of rows> -c <number of columns> -b <total bombs> -m')
          print()
@@ -60,6 +68,7 @@ def main(argv):
       elif opt == '-m': # cheater mode
          mode = True
 
+   # if the arguemts were used change them from strings
    rows = int(rows)
    cols = int(cols)
    bombs = int(bombs)
@@ -89,7 +98,7 @@ def main(argv):
 
 if __name__ == "__main__":
 
-   main(sys.argv[1:]) # send the command line arguments
+   main(sys.argv[1:]) # send the command line arguments except for the program name
    
    print("Application closed")
    print("==========================================")
