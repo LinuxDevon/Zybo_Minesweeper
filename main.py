@@ -35,15 +35,19 @@ def main(argv):
       opts, args = getopt.getopt(argv,"hr:c:b:m",["rows=","columns=","bombs="])
    except getopt.GetoptError:
       print("INPUT ERROR...")
-      print('./main.py -h')
+      print('./main.py -h for help...')
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
+         print("The options are:")
          print('./main.py -r <number of rows> -c <number of columns> -b <total bombs> -m')
+         print()
          print(" <number of rows> - must be greater than 1")
          print(" <number of columns> - must be greater than 1")
          print(" <total bombs> - number of bombs in the game. Has to be fewer than rows*columns")
+         print()
          print(" -m is to activate cheater mode: default is off")
+         print()
          print("./main.py with no args defaults to rows=10, columns=10, total bombs=10")
          print
          sys.exit()
@@ -68,6 +72,8 @@ def main(argv):
       printf("INPUT ERROR: Too few rows or columns. They must be greater than 1.")
       sys.exit(2)
 
+   print("These are the settings for this game:")
+   
    # print out the settings being used for the game
    print()
    print("Number of rows:    " + str(rows))
@@ -76,11 +82,12 @@ def main(argv):
    print("Cheater mode is:   " + str(mode))
    print()
 
+   print("==========================================")
+   print("Starting Application")
+
    startApplication(rows, cols, bombs, mode)
 
 if __name__ == "__main__":
-   print("==========================================")
-   print("Starting Application")
 
    main(sys.argv[1:]) # send the command line arguments
    
