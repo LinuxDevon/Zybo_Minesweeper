@@ -8,7 +8,9 @@ https://github.com/JordanMontgomery/Minesweeper
 ## Installing Xillinux
 I  started by installing Xillinux with the given instructions from Dr. Song. There is a copy of them in the Resources folder.
 
-Setup SD card by moving the approptiate files in the instructions. 
+Setup SD card by moving the approptiate files in the instructions. If you don't have Vivado I included the boot.bin, devicetree.dtb, and 
+xillydemo.bit in the Resource folder. The Uimage file is excluded due to the size. You have to go to http://www.xillybus.com/xillinux to 
+retrieve that file.
 
 ## Start the desktop on startup
 https://wiki.archlinux.org/index.php/Xinit#Autostart_X_at_login
