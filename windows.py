@@ -7,22 +7,28 @@ from time import sleep
 
 # -- DEFINES -- #
 PAD = 5
-ROW = 10
-COL = 10
 RESET_COUNT = "000"
-TOTAL_BOMBS = 10
+RESET_WIDTH = 25
+RESET_HEIGHT = 25
 
 class Window(tk.Frame):
-   def __init__(self, parent):
+   def __init__(self, parent , numOfRows, numOfCols, numOfBombs):
       tk.Frame.__init__(self,parent) # create the frame to attach to the root
       self.root = parent
 
       # variables for the board
       self.gameOver = False
-      self.row = ROW
-      self.col = COL
+      self.row = numOfRows
+      self.col = numOfCols
+      self.startingBombCount = numOfBombs
+
+      # images
+      self.deadSmiley = tk.PhotoImage(file="Tiles/deadsmiley.png")
+      self.smiley = tk.PhotoImage(file="Tiles/smiley.png")
+      self.sunglassesSmiley = tk.PhotoImage(file="Tiles/sunglasses.png")
+
       self.timeCount = "000"
-      self.flagCount = str(TOTAL_BOMBS).zfill(3)   # fill with leading zeros
+      self.flagCount = str(self.startingBombCount).zfill(3)   # fill with leading zeros
 
       # timer setup
       self.time = tk.StringVar()       # make the time a variable
@@ -43,7 +49,7 @@ class Window(tk.Frame):
       self.Timer = tk.Label(self, textvariable=self.time, font=('times', '20', 'bold'))
       self.Timer.grid(row=0, column=0, sticky="e", padx=15)
 
-      self.ResetButton = tk.Button(self, text="R", command=self.Reset)
+      self.ResetButton = tk.Button(self, image=self.smiley, width=RESET_WIDTH, height=RESET_HEIGHT, command=self.Reset)
       self.ResetButton.grid(row=0, column=1, sticky="n")
 
       self.FlagCount = tk.Label(self, textvariable=self.flags, font=('times', '20', 'bold'))
@@ -90,6 +96,8 @@ class Window(tk.Frame):
    def GameOver(self):
       self.gameOver = True
 
+      self.ResetButton.config(image=self.deadSmiley)
+
       for tile in self.tileArray:
          tile.showBomb()
 
@@ -134,11 +142,11 @@ class Window(tk.Frame):
          if(not tileToCheck.isPressed() and not tileToCheck.isBomb()):
             numOfTilesNotPressed += 1
 
-      print(numOfTilesNotPressed)
       if(numOfTilesNotPressed == 0):
          self.gameOver = True
+         self.ResetButton.config(image=self.sunglassesSmiley)
          print("GAME WON!!!!!!!!!!")
-         print("Congradulations!")
+         print("Congratulations!")
 
    def checkTiles(self, tile):
       row = tile.row
@@ -198,13 +206,14 @@ class Window(tk.Frame):
    # place holder for reset function to the gameboard
    def Reset(self):
       print("Game reset...")
-      # sleep(1.5)
+
+      self.ResetButton.config(image=self.smiley)
 
       # reset the game flag count and timer
       self.timeCount = RESET_COUNT
       self.time.set(self.timeCount)
 
-      self.flagCount = str(TOTAL_BOMBS).zfill(3)
+      self.flagCount = str(self.startingBombCount).zfill(3)
       self.flags.set(self.flagCount)
 
       # reset every tile
@@ -225,7 +234,7 @@ class Window(tk.Frame):
 
    def RandomizeBombs(self):
       # pick the bombs at random
-      bombs = sample(self.tileArray, TOTAL_BOMBS)
+      bombs = sample(self.tileArray, self.startingBombCount)
 
       # set the tiles as bombs
       for tile in bombs:
