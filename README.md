@@ -33,19 +33,6 @@ fi
 ## installing the libraries
 Install the libraries by running the script: `install.sh` in the Scripts folder
 
-## Start game on startup
-This is done using Systemd. I have the service file that i used in the Scripts folder. If you want to use this you must edit the file.
-
-Add the correct working directory and correct path to the game.
-
-To use this file move the service file to `/lib/systemd/system/`
-
-Type `sudo systemctl enable Zybo_Minesweeper.service`
-
-Test that it is working correctly by typing `sudo systemctl start Zybo_Minesweeper.service` and seeing if it pops up.
-
-Reboot and it should load. If it doesn't verify the file paths and working directory give are correct.
-
 # Running the game
 Start the game by typing `./main.py`.
 
